@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GuedrMaster</string>
+    <string name="hola_keepcoders">Hola Keepcoders</string>
+    <string name="offline_weather_image_description">Offline weather</string>
 </resources>
