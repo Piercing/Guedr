@@ -13,12 +13,22 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hola_keepcoders" />
+        android:text="@string/hola_keepcoders"
+        android:layout_weight="0" />
 
     <ImageView
         android:contentDescription="@string/offline_weather_image_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/offline_weather"/>
+        android:src="@drawable/offline_weather"
+        android:layout_weight="1" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/change_american_system"
+        android:id="@+id/change_to_american_btn"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0" />
 
 </LinearLayout>

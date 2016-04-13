@@ -2,4 +2,5 @@
     <string name="app_name">GuedrMaster</string>
     <string name="hola_keepcoders">Hola Keepcoders</string>
     <string name="offline_weather_image_description">Offline weather</string>
+    <string name="change_american_system">Cambiar a sistema americano</string>
 </resources>
