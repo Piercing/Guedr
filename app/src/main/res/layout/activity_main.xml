@@ -27,6 +27,14 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/change_european_system"
+        android:id="@+id/change_to_european_btn"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/change_american_system"
         android:id="@+id/change_to_american_btn"
         android:layout_gravity="center_horizontal"
