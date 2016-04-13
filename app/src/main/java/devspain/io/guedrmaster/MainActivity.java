@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
 
     // Defino una constante para mostrar logs
     private static final String TAG = "MainActivity";
+    private ImageView forecastImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Mostramos nuestro primer log pasándole la constante
         Log.v(MainActivity.TAG, "Hola Amundio desde Guedr");
+
+        // Accedemos a la ImageView a través de su id
+        this.forecastImage = (ImageView) findViewById(R.id.forcast_image);
 
         // Asociamos controlador con vista a través del indentificador
         Button change2AmericanSystem = (Button) findViewById(R.id.change_to_american_btn);
@@ -38,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void changeToAmericanSystem(View view) {
         Log.v(MainActivity.TAG, "Se llamó a change2AmericanSystem");
+        // Cambiamos la imagen a mostrar
+        // Le decimos al 'id' de la ImageView -> 'forecastImage' cual va a ser su imagen
+        forecastImage.setImageResource(R.drawable.offline_weather2);
     }
 
 }
