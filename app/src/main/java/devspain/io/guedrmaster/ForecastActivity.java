@@ -8,9 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ForecastActivity extends AppCompatActivity {
 
@@ -132,6 +132,9 @@ public class ForecastActivity extends AppCompatActivity {
             // Estoy manejando la pantalla de ajustes
             // Miro a ver primero si ha cancelado, porque de ser así no tengo que hacer nada.
             if (resultCode == RESULT_OK) {
+                // Guardamos el valor previo de showCelsius por si el usuario quiere deshacerlo.
+                final boolean oldShowCelsius = showCelsius;
+
                 // El usuario ha elegido algo, recibimos un parámetro 'data de tipo Intent', y
                 // es el intent que me devuelve el que he creado en 'SettingsActivity' -> 'acceptSettings()'
                 // y que me está devolviendo los datos del usuario, es decir, que ha hecho algo.
@@ -171,7 +174,25 @@ public class ForecastActivity extends AppCompatActivity {
                 //Toast.makeText(this, "Preferencias actualizadas", Toast.LENGTH_LONG).show();
 
                 // SnackBar, accede a la vista que contiene mi pantalla 'findViewById(android.R.id.content'
-                Snackbar.make(findViewById(android.R.id.content), "Preferencias actualizadas", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), "Preferencias actualizadas", Snackbar.LENGTH_LONG).setAction("Deshacer", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Aquí podemos deshacer lo que el usuario haya hecho en los ajustes
+                        // Como hemos guardado previamente el valor antiguo, se lo asignamos
+                        // Restauramos la variable 'showCelsius'
+                        showCelsius = oldShowCelsius;
+                        // Guardamos el valor anterior en las preferencias
+                        // Le paso 'ForecastActivity.this' porque sino no apunta a esta clase
+                        // aputaría a la clase anónima que estamos instanciando 'new View.OnClickListener()'.
+                        PreferenceManager.getDefaultSharedPreferences(ForecastActivity.this)
+                                .edit()
+                                .putBoolean(PREFERENCE_UNITS, showCelsius)
+                                .commit();
+                        // Actualizamos la interfaz
+                        setForecast(mForecast);
+                    }
+                })
+                        .show();
             }
         }
     }
