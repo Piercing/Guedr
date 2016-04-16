@@ -8,7 +8,9 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 public class SettingsActivity extends AppCompatActivity {
-    // Punto de entrada, argunmetos que necesita  'SettingsActivity' para poder funcionar.
+    // Punto de entrada, argunmetos que necesita 'SettingsActivity' para poder saber datos de 'ForecasActivity'.
+    // Viene de 'ForecastActivity' ----->  'intent.putExtra(SettingsActivity.EXTRA_CURRENT_UNITS, showCelsius);'
+    // Mediante el 'intent.putExtra' 'SettingsActivity' nos está mandando el valor que tiene ---->'showCelsius'
     public static final String EXTRA_CURRENT_UNITS = "io.devspain.guedr.SettingsActivity.EXTRA_CURRENT_UNITS";
 
     private RadioGroup mRadioGroup;
@@ -43,15 +45,21 @@ public class SettingsActivity extends AppCompatActivity {
         // las actividades tienen un método que se  llama 'getIntem()' que  es
         // el método que ha generado la aparición de esta actividad, por tanto,
         // aquí es donde tenemos el EXTRA_CURRENT_UNITS. Con esto sé qué valor
-        // me ha pasado la pantalla anterior
+        // me ha pasado la pantalla anterior 'SettingsActivity' mediante ---->
+        // 'intent.putExtra(SettingsActivity.EXTRA_CURRENT_UNITS, showCelsius);'
+        // 'putExtra' me envía datos desde 'ForecastActivity' al dato de entra
+        // 'EXTRA_CURRENT_UNITS' y los recogo con 'getIntent().getBooleanExtra'.
+        // Con esto sé si -->'showCelsius' es true o false, indicando que botón
+        // debe quedarse seleccionado una vez q salgamos d la pantalla Settings
         boolean showCelsius = getIntent().getBooleanExtra(EXTRA_CURRENT_UNITS, true);
 
-        if(showCelsius){
+        if (showCelsius) {
             RadioButton celsiusRadio = (RadioButton) findViewById(R.id.celsius_rb);
             celsiusRadio.setChecked(true);
         } else {
             RadioButton farenheitRadio = (RadioButton) findViewById(R.id.farenheit_rb);
-            farenheitRadio.setChecked(true);        }
+            farenheitRadio.setChecked(true);
+        }
 
     }
 

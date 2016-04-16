@@ -3,12 +3,14 @@ package devspain.io.guedrmaster;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ForecastActivity extends AppCompatActivity {
 
@@ -164,6 +166,12 @@ public class ForecastActivity extends AppCompatActivity {
 
                 // Actualizamos la interfaz con las nuevas unidades.
                 setForecast(mForecast);
+
+                // Avisamos al usuario que los ajustes han cambiado.
+                //Toast.makeText(this, "Preferencias actualizadas", Toast.LENGTH_LONG).show();
+
+                // SnackBar, accede a la vista que contiene mi pantalla 'findViewById(android.R.id.content'
+                Snackbar.make(findViewById(android.R.id.content), "Preferencias actualizadas", Snackbar.LENGTH_LONG).show();
             }
         }
     }
