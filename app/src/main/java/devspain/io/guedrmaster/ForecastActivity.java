@@ -29,15 +29,8 @@ public class ForecastActivity extends AppCompatActivity {
     private boolean showCelsius;
     private Forecast mForecast;
 
-    /**
-     * Convertir celsius a Farenheit
-     *
-     * @param celsius
-     * @return
-     */
-    protected static float toFarenheit(float celsius) {
-        return (celsius * 1.8f) + 32;
-    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,6 +207,10 @@ public class ForecastActivity extends AppCompatActivity {
         mHumidity.setText(String.format(getString(R.string.humidity_label), forecast.getHumifity()) + "%");
         mDescription.setText(forecast.getDescription());
         mForecastImage.setImageResource(forecast.getIcon());
+    }
+
+    protected static float toFarenheit(float celsius) {
+        return (celsius * 1.8f) + 32;
     }
 }
 

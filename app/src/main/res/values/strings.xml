@@ -5,5 +5,7 @@
     <string name="humidity_label">Humedad: %.2f </string>
     <string name="forecast_description_example"></string>
     <string name="forecast_image">forecast_image</string>
+    <string name="updated_preferences">Preferencias actualizadas</string>
+    <string name="undo">Deshacer</string>
     <string name="settings">Ajustes</string>
 </resources>
