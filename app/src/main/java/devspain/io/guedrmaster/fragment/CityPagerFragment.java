@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import devspain.io.guedrmaster.R;
+import devspain.io.guedrmaster.model.Cities;
+import devspain.io.guedrmaster.model.Forecast;
 
 
 /**
@@ -54,10 +56,13 @@ public class CityPagerFragment extends Fragment {
 
 // Creo una clase abstracta que luego voy a pasar una instancia de ésta al pager como su adaptador
 class CityPagerAdapter extends FragmentPagerAdapter {
+    private Cities mCities;
 
     // Implementa el constructor de la clase padre por ser abstracta
     public CityPagerAdapter(FragmentManager fm) {
         super(fm);
+        // Instancio mCities
+        mCities = new Cities();
     }
 
     // Método que pregunta el pager a su adaptador que fragment tiene que ir en la posición 0
@@ -65,12 +70,32 @@ class CityPagerAdapter extends FragmentPagerAdapter {
     @Override
     public android.app.Fragment getItem(int position){
         // En la posición que recibo tengo que crear un nuevo ForecastFragment, una ventana nueva.
-        return new ForecastFragment();
+        // Saco del modelo: primero la posición, de las ciudades saco la lista y saco el
+        // elemento del índice que necesito y saco su nombre y se lo asigno a 'citiName'
+        String cityName = mCities.getCities().get(position).getName();
+
+        // Instancio el fragment a mostar en el view pager
+        ForecastFragment fragment = new ForecastFragment();
+
+        // Para pasar al fragment el argumento 'cityName':
+
+        // 1º creo un objeto bundle, una especie de diccionario
+        Bundle argumets = new Bundle();
+        // Como es un diccionario necesita una clave y un valor
+        // La clave me la invento y le paso el cityName como valor, el nombre de la ciudad
+        argumets.putString("cityName", cityName);
+        // Aquí es cuando le pasamos al fragment los argumentos que necesita
+        // ya que el método 'setArgumets' espera recibir unos argumentos.
+        fragment.setArguments(argumets);
+
+        // Devuelvo el fragment listo para se mostrado
+        return fragment;
     }
 
     // Método el cuál el pager la va a preguntar cuántas páginas tiene que mostrar (pantallas)
     @Override
     public int getCount() {
-        return 10;
+        // Le digo que tiene tantas ciudades como tenga el arrayList
+        return mCities.getCities().size();
     }
 }

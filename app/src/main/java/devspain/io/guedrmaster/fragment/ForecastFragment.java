@@ -31,6 +31,7 @@ public class ForecastFragment extends Fragment {
     private TextView mMinTemp;
     private TextView mHumidity;
     private TextView mDescription;
+    private TextView mCityName;
     private ImageView mForecastImage;
     private boolean showCelsius;
     private Forecast mForecast;
@@ -69,6 +70,15 @@ public class ForecastFragment extends Fragment {
         mHumidity = (TextView) root.findViewById(R.id.humidity);
         mDescription = (TextView) root.findViewById(R.id.forecast_description);
         mForecastImage = (ImageView) root.findViewById(R.id.forecast_image);
+        mCityName = (TextView) root.findViewById(R.id.city);
+
+        // Con los argumentos que me pasan configuro la vista
+        // Para sacar los argumentos de un fragment:
+        Bundle arguments = getArguments();
+        // Le digo la clave con la que la he guardado antes y la saco
+        String cityName = arguments.getString("cityName");
+        // Le digo que el texto de esa etiqueta es lo que me han pasado como argumento
+        mCityName.setText(cityName);
 
         // Creo mi modelo
         mForecast = new Forecast(30, 15, 25, "Hace calorcito, toca cañita fresquita", R.drawable.sun_cloud);

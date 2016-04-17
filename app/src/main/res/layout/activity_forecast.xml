@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="devspain.io.guedrmaster.CityPagerFragment"
+    android:name="devspain.io.guedrmaster.fragment.CityPagerFragment"
     tools:layout="@layout/fragment_city_pager">
 
 </fragment>
