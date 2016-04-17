@@ -1,7 +1,9 @@
 package devspain.io.guedrmaster.model;
 
 
-public class City {
+import java.io.Serializable;
+
+public class City implements Serializable{
 
     private String mName;
     private Forecast mForecast;

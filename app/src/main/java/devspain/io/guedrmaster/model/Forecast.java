@@ -1,9 +1,11 @@
 package devspain.io.guedrmaster.model;
 
+import java.io.Serializable;
+
 /**
  * Created by macbookpro on 13/4/16.
  */
-public class Forecast {
+public class Forecast implements Serializable {
 
     private float mMaxTemp;
     private float mMinTemp;

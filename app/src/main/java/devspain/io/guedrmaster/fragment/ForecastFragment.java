@@ -19,10 +19,13 @@ import android.widget.TextView;
 
 import devspain.io.guedrmaster.R;
 import devspain.io.guedrmaster.activity.SettingsActivity;
+import devspain.io.guedrmaster.model.City;
 import devspain.io.guedrmaster.model.Forecast;
 
 
 public class ForecastFragment extends Fragment {
+    public static final String ARG_CITY = "city";
+
     private static final int REQUEST_UNITS = 1;
     private static final String TAG = "ForecastActivity";
     private static final String PREFERENCE_UNITS = "units";
@@ -34,7 +37,32 @@ public class ForecastFragment extends Fragment {
     private TextView mCityName;
     private ImageView mForecastImage;
     private boolean showCelsius;
-    private Forecast mForecast;
+    private City mCity;
+
+    /**
+     * Patrón para crera un métod llamdo newInstance, recibe como argumentos lo
+     * que necesita un 'fragment', facilitando las cosas a la hora de instanciar
+     * un fragment
+     * @param city
+     * @return
+     */
+    public static ForecastFragment newInstance(City city) {
+        // Creo un fragment
+        ForecastFragment fragment = new ForecastFragment();
+        // Para pasar al fragment el argumento 'cityName':
+
+        // 1º creo un objeto bundle, una especie de diccionario
+        Bundle argumets = new Bundle();
+        // Como es un diccionario necesita una clave y un valor
+        // La clave me la invento y le paso city como valor, la ciudad
+        argumets.putSerializable(ForecastFragment.ARG_CITY, city);
+        // Aquí es cuando le pasamos al fragment los argumentos que necesita
+        // ya que el método 'setArgumets' espera recibir unos argumentos.
+        fragment.setArguments(argumets);
+
+        // Devuelvo el fragments
+        return  fragment;
+    }
 
     protected static float toFarenheit(float celsius) {
         return (celsius * 1.8f) + 32;
@@ -46,6 +74,22 @@ public class ForecastFragment extends Fragment {
         // Le digo que tengo un menú,
         // para que lo muestre la actividad
         setHasOptionsMenu(true);
+
+        // NOTA: se puede hacer también en l método de arriba, 'newInstance'
+        // Sacamos los argumentos de este fragment con 'getArgumets médodo de la clase Fragments de Android'
+        if (getArguments() != null) {
+            mCity = (City) getArguments().getSerializable(ARG_CITY);
+
+
+            /*// CON LO ANTERIOR YA NO ME HACE FALTA ESTO
+            // Con los argumentos que me pasan configuro la vista
+            // Para sacar los argumentos de un fragment:
+            Bundle arguments = getArguments();
+            // Le digo la clave con la que la he guardado antes y la saco
+            String cityName = arguments.getString(ARG_CITY);
+            // Le digo que el texto de esa etiqueta es lo que me han pasado como argumento
+            mCityName.setText(cityName);*/
+        }
     }
 
     @Nullable
@@ -72,18 +116,8 @@ public class ForecastFragment extends Fragment {
         mForecastImage = (ImageView) root.findViewById(R.id.forecast_image);
         mCityName = (TextView) root.findViewById(R.id.city);
 
-        // Con los argumentos que me pasan configuro la vista
-        // Para sacar los argumentos de un fragment:
-        Bundle arguments = getArguments();
-        // Le digo la clave con la que la he guardado antes y la saco
-        String cityName = arguments.getString("cityName");
-        // Le digo que el texto de esa etiqueta es lo que me han pasado como argumento
-        mCityName.setText(cityName);
-
-        // Creo mi modelo
-        mForecast = new Forecast(30, 15, 25, "Hace calorcito, toca cañita fresquita", R.drawable.sun_cloud);
-
-        setForecast(mForecast);
+        // Actualizamos la interfaz
+        updateCityInfo();
 
         return root;
     }
@@ -155,7 +189,7 @@ public class ForecastFragment extends Fragment {
 
 
                 // Actualizamos la interfaz con las nuevas unidades
-                setForecast(mForecast);
+                updateCityInfo();
 
                 // Avisamos al usuario de que los ajustes han cambiado
                 //Toast.makeText(this, "Preferencias actualizadas", Toast.LENGTH_LONG).show();
@@ -174,7 +208,7 @@ public class ForecastFragment extends Fragment {
 
 
                                 // Actualizamos la interfaz
-                                setForecast(mForecast);
+                                updateCityInfo();
                             }
                         })
                         .show();
@@ -182,7 +216,13 @@ public class ForecastFragment extends Fragment {
         }
     }
 
-    public void setForecast(Forecast forecast) {
+    public void updateCityInfo() {
+
+        // Establezco el nombre de la ciudad en la vista
+        mCityName.setText(mCity.getName());
+
+        // Obtengo el forecast
+        Forecast forecast = mCity.getForecast();
         // Muestro en la interfaz mi modelo
         float maxTemp = forecast.getMaxTemp();
         float minTemp = forecast.getMinTemp();

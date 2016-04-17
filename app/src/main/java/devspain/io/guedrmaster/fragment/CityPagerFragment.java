@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import devspain.io.guedrmaster.R;
 import devspain.io.guedrmaster.model.Cities;
-import devspain.io.guedrmaster.model.Forecast;
+import devspain.io.guedrmaster.model.City;
 
 
 /**
@@ -68,25 +68,15 @@ class CityPagerAdapter extends FragmentPagerAdapter {
     // Método que pregunta el pager a su adaptador que fragment tiene que ir en la posición 0
     // El nuestro ahora mismo va de 0 a 9
     @Override
-    public android.app.Fragment getItem(int position){
+    public android.app.Fragment getItem(int position) {
         // En la posición que recibo tengo que crear un nuevo ForecastFragment, una ventana nueva.
-        // Saco del modelo: primero la posición, de las ciudades saco la lista y saco el
-        // elemento del índice que necesito y saco su nombre y se lo asigno a 'citiName'
-        String cityName = mCities.getCities().get(position).getName();
+        // Saco del modelo la posición y la guardo como un objeto 'City'
+        City cityName = mCities.getCities().get(position);
 
-        // Instancio el fragment a mostar en el view pager
-        ForecastFragment fragment = new ForecastFragment();
-
-        // Para pasar al fragment el argumento 'cityName':
-
-        // 1º creo un objeto bundle, una especie de diccionario
-        Bundle argumets = new Bundle();
-        // Como es un diccionario necesita una clave y un valor
-        // La clave me la invento y le paso el cityName como valor, el nombre de la ciudad
-        argumets.putString("cityName", cityName);
-        // Aquí es cuando le pasamos al fragment los argumentos que necesita
-        // ya que el método 'setArgumets' espera recibir unos argumentos.
-        fragment.setArguments(argumets);
+        // Instancio el fragment a mostar en el view pager, llamando al método
+        // ' ForecastFragment.newInstance(cityName)' creado en 'ForecastFragment'
+        // y que me devuelve un 'fragment' que es la ciudad que le paso y que es su posición
+        ForecastFragment fragment = ForecastFragment.newInstance(cityName);
 
         // Devuelvo el fragment listo para se mostrado
         return fragment;
@@ -97,5 +87,12 @@ class CityPagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         // Le digo que tiene tantas ciudades como tenga el arrayList
         return mCities.getCities().size();
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        super.getPageTitle(position);
+        return mCities.getCities().get(position).getName();
+
     }
 }
