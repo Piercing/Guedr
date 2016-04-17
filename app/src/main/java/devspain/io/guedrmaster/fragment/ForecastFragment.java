@@ -34,7 +34,7 @@ public class ForecastFragment extends Fragment {
     private TextView mMinTemp;
     private TextView mHumidity;
     private TextView mDescription;
-    private TextView mCityName;
+    //private TextView mCityName;
     private ImageView mForecastImage;
     private boolean showCelsius;
     private City mCity;
@@ -114,7 +114,7 @@ public class ForecastFragment extends Fragment {
         mHumidity = (TextView) root.findViewById(R.id.humidity);
         mDescription = (TextView) root.findViewById(R.id.forecast_description);
         mForecastImage = (ImageView) root.findViewById(R.id.forecast_image);
-        mCityName = (TextView) root.findViewById(R.id.city);
+        //mCityName = (TextView) root.findViewById(R.id.city);
 
         // Actualizamos la interfaz
         updateCityInfo();
@@ -219,7 +219,7 @@ public class ForecastFragment extends Fragment {
     public void updateCityInfo() {
 
         // Establezco el nombre de la ciudad en la vista
-        mCityName.setText(mCity.getName());
+        //mCityName.setText(mCity.getName());
 
         // Obtengo el forecast
         Forecast forecast = mCity.getForecast();
