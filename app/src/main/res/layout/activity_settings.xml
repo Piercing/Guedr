@@ -1,49 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
-    tools:context=".activity.SettingsActivity">
-    
-    <RadioGroup
-        android:id="@+id/units_rg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:checkedButton="@+id/celsius_rb">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".activity.SettingsActivity">
 
-        <RadioButton
-            android:id="@+id/celsius_rb"
+    <include layout="@layout/toolbar_main"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:tools="http://schemas.android.com/tools"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical"
+                  android:paddingBottom="@dimen/activity_vertical_margin"
+                  android:paddingLeft="@dimen/activity_horizontal_margin"
+                  android:paddingRight="@dimen/activity_horizontal_margin"
+                  android:paddingTop="@dimen/activity_vertical_margin">
+
+
+        <RadioGroup
+            android:id="@+id/units_rg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Unidades Celsius"/>
+            android:checkedButton="@+id/celsius_rb">
 
-        <RadioButton
-            android:id="@+id/farenheit_rb"
+            <RadioButton
+                android:id="@+id/celsius_rb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Unidades Celsius"/>
+
+            <RadioButton
+                android:id="@+id/farenheit_rb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Unidades Farenheit"/>
+
+        </RadioGroup>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Unidades Farenheit" />
+            android:gravity="center">
 
-    </RadioGroup>
+            <Button
+                android:id="@+id/cancel_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancelar"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center">
-        <Button
-            android:id="@+id/cancel_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancelar"/>
-        <Button
-            android:id="@+id/accept_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Aceptar"/>
+            <Button
+                android:id="@+id/accept_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aceptar"/>
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

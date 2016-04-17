@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:name="devspain.io.guedrmaster.fragment.CityPagerFragment"
-    tools:layout="@layout/fragment_city_pager">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
-</fragment>
+    <include layout="@layout/toolbar_main"/>
+
+    <FrameLayout
+        android:id="@+id/fragment_city_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!--fragment android:id="@+id/fragment"
+              android:name="devspain.io.guedrmaster.fragment.CityPagerFragment"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:layout="@layout/fragment_city_pager">
+
+    </fragment-->
+</LinearLayout>
