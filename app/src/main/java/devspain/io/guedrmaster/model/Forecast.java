@@ -1,4 +1,4 @@
-package devspain.io.guedrmaster;
+package devspain.io.guedrmaster.model;
 
 /**
  * Created by macbookpro on 13/4/16.

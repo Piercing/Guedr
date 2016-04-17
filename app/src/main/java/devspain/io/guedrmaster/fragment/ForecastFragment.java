@@ -1,4 +1,4 @@
-package devspain.io.guedrmaster;
+package devspain.io.guedrmaster.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -16,6 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import devspain.io.guedrmaster.R;
+import devspain.io.guedrmaster.activity.SettingsActivity;
+import devspain.io.guedrmaster.model.Forecast;
+
 
 public class ForecastFragment extends Fragment {
     private static final int REQUEST_UNITS = 1;
@@ -37,7 +42,8 @@ public class ForecastFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        // Le digo que tengo un menú,
+        // para que lo muestre la actividad
         setHasOptionsMenu(true);
     }
 
@@ -50,11 +56,11 @@ public class ForecastFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_forecast, container, false);
 
         // Mostramos un ejemplo de recurso integer
-        // Log.v(TAG, "Ejemplo de integer en recurso: " + getResources().getInteger(R.integer.piercing));
+        Log.v(TAG, "Ejemplo de integer en recurso: " + getResources().getInteger(R.integer.piercing));
 
         // Cargamos los valores de la última vez (guardados en SharedPreferences)
         // Si es la primera vez, le paso true, para que los cargue en 'Celsius'
-        showCelsius = PreferenceManager.getDefaultSharedPreferences(getActivity())
+        showCelsius = PreferenceManager.getDefaultSharedPreferences(ForecastFragment.this.getActivity())
                 .getBoolean(PREFERENCE_UNITS, true);
 
         // Asociamos vista con controlador
@@ -65,7 +71,7 @@ public class ForecastFragment extends Fragment {
         mForecastImage = (ImageView) root.findViewById(R.id.forecast_image);
 
         // Creo mi modelo
-        mForecast = new Forecast(30, 15, 25, "Algunas nubes", R.drawable.sun_cloud);
+        mForecast = new Forecast(30, 15, 25, "Hace calorcito, toca cañita fresquita", R.drawable.sun_cloud);
 
         setForecast(mForecast);
 
@@ -86,7 +92,7 @@ public class ForecastFragment extends Fragment {
 
         if (item.getItemId() == R.id.menu_show_settings) {
             // Lanzamos la actividad SettingsActivity
-            Intent intent = new Intent(getActivity(), SettingsActivity.class);
+            Intent intent = new Intent(ForecastFragment.this.getActivity(), SettingsActivity.class);
 
             // Le pasamos datos a la pantalla de ajustes
             intent.putExtra(SettingsActivity.EXTRA_CURRENT_UNITS, showCelsius);
@@ -132,9 +138,7 @@ public class ForecastFragment extends Fragment {
                 // Hacemos commit de los cambios
                 editor.commit();
                 */
-
-
-                PreferenceManager.getDefaultSharedPreferences(getActivity())
+                PreferenceManager.getDefaultSharedPreferences(ForecastFragment.this.getActivity())
                         .edit()
                         .putBoolean(PREFERENCE_UNITS, showCelsius)
                         .commit();
@@ -153,7 +157,7 @@ public class ForecastFragment extends Fragment {
                                 showCelsius = oldShowCelsius;
 
                                 // Guardamos el valor anterior en las preferencia
-                                    PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                    PreferenceManager.getDefaultSharedPreferences(ForecastFragment.this.getActivity())
                                             .edit()
                                             .putBoolean(PREFERENCE_UNITS, showCelsius)
                                             .commit();

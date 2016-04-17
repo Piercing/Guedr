@@ -1,4 +1,4 @@
-package devspain.io.guedrmaster;
+package devspain.io.guedrmaster.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+
+import devspain.io.guedrmaster.R;
 
 public class SettingsActivity extends AppCompatActivity {
     // Punto de entrada, argunmetos que necesita 'SettingsActivity' para poder saber datos de 'ForecasActivity'.
