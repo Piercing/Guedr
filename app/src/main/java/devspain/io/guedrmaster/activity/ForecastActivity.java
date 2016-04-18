@@ -50,10 +50,11 @@ public class ForecastActivity extends AppCompatActivity {
         // busco el fragment, y solo si es 'null' hago la transacción. Con esto comprobamos si ya
         // está añadido el 'cityPagerFragment'
         if (fm.findFragmentById(R.id.fragment_city_pager) == null) {
+            // Como no existe, lo añadimos con una transacción a nuestra jerarquía de vistas
             fm.beginTransaction()
                     // añado el fragment que yo quiero ('new CityPagerFragment()') y donde lo meto('fragment_city_pager')
                     .add(R.id.fragment_city_pager, new CityPagerFragment())
-                    .commit();
+                    .commit(); // Mucho ojo, no olvidar de poner el commit
         }
 
     }

@@ -40,7 +40,7 @@ public class ForecastFragment extends Fragment {
     private City mCity;
 
     /**
-     * Patrón para crera un métod llamdo newInstance, recibe como argumentos lo
+     * Patrón para crear un método llamado newInstance, recibe como argumentos lo
      * que necesita un 'fragment', facilitando las cosas a la hora de instanciar
      * un fragment
      * @param city
