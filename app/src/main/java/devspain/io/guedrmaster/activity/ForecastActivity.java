@@ -4,11 +4,13 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import devspain.io.guedrmaster.R;
 import devspain.io.guedrmaster.fragment.CityListFragment;
+import devspain.io.guedrmaster.model.City;
 
-public class ForecastActivity extends AppCompatActivity {
+public class ForecastActivity extends AppCompatActivity implements CityListFragment.CityListListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +52,20 @@ public class ForecastActivity extends AppCompatActivity {
         // busco el fragment, y solo si es 'null' hago la transacción. Con esto comprobamos si ya
         // está añadido el 'CityListFragment'
         if (fm.findFragmentById(R.id.fragment_city_list) == null) {
-            // Como no existe, lo añadimos con una transacción a nuestra jerarquía de vistas
+            // Como no existe, añado el fragment con una transacción a nuestra jerarquía de vistas
             fm.beginTransaction()
                     // añado el fragment que yo quiero ('new CityListFragment()') y donde lo meto('fragment_city_list')
                     .add(R.id.fragment_city_list, new CityListFragment())
                     .commit(); // Mucho ojo, no olvidar de poner el commit
         }
 
+    }
+
+    @Override
+    public void onCitySelected(City city, int position) {
+        // Aquí me entero de que una ciudad ha sido seleccionada en el CityListFragment
+        // Tendré que mostara la ciudad en el CityPagerFragment
+        Log.v("ForecastActivity", "Se ha seleccionado al ciudad: " + city + " número: " + position);
     }
 }
 
