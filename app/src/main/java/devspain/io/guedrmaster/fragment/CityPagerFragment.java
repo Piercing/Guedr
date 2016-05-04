@@ -33,6 +33,7 @@ public class CityPagerFragment extends Fragment {
         // Required empty public constructor
     }
 
+    // Siempre que tengamos menún hay que implementar esta método, sino, no los vemos en el fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +46,7 @@ public class CityPagerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        // Obtengo una referencia a la raíz para sacar cosas como el ViewPager
+        // Obtengo una referencia a la raíz,(root), para sacar cosas como el ViewPager
         View root = inflater.inflate(R.layout.fragment_city_pager, container, false);
 
         // Recupero el modelo para poder sacar la lista de ciudades
@@ -93,12 +94,13 @@ public class CityPagerFragment extends Fragment {
         // toolbar la que esté en ese momento que me lo da el propio método
         updateCityInfo();
 
+        // Devolvemos siempre el root
         return root;
     }
 
     public void updateCityInfo() {
 
-        // Saco la posición en la que estoy y la guardo
+        // Saco la posición en la que estoy en ese momento y la guardo
         int position = mPager.getCurrentItem();
 
         // Comprobamos primero si 'getActivity' es una clase de 'AppCompatActivity'
@@ -115,10 +117,13 @@ public class CityPagerFragment extends Fragment {
             ActionBar actionBar = activity.getSupportActionBar();
 
             // 3º) Camiar el texto a la toolbar
-            actionBar.setTitle(mCities.getCities().get(position).getName());
+            if (actionBar != null) {
+                actionBar.setTitle(mCities.getCities().get(position).getName());
+            }
         }
     }
 
+    // Le damos menús a nuestro fragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -127,6 +132,7 @@ public class CityPagerFragment extends Fragment {
         inflater.inflate(R.menu.citypager, menu);
     }
 
+    // Qué hacer cuando el usuario pulsa cada uno de los botones
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean superValue = super.onOptionsItemSelected(item);
@@ -141,6 +147,7 @@ public class CityPagerFragment extends Fragment {
 
             return true;
 
+            //Si el 'itemID' es el de 'next' avanzamos
         } else if (item.getItemId() == R.id.next) {
             // Avanzamos una página, aquí le sumo 1
             mPager.setCurrentItem(mPager.getCurrentItem() + 1);
@@ -168,7 +175,7 @@ public class CityPagerFragment extends Fragment {
 
             // Ahora que tengo las referencias, lo que tengo que hacer es activarlos
             // o desactivarlos en función de las condiciones que he comentado más arriba
-            // Si el item, ciudad, en la que me encuentro, es menor que el tamaño del array de ciudades menos 1
+            // Si el item ciudad en la que me encuentro, es menor que el tamaño del array de ciudades menos 1
             // me devuelve true, sino false. Si es true, es que puedo seguir, sino bloqueo botón
             boolean nextEnable = mPager.getCurrentItem() < mCities.getCities().size() - 1;
             // Le paso el resultado de 'nextEnable', si es true, botón activado, sino desactivado

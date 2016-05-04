@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import devspain.io.guedrmaster.R;
-import devspain.io.guedrmaster.fragment.CityPagerFragment;
+import devspain.io.guedrmaster.fragment.CityListFragment;
 
 public class ForecastActivity extends AppCompatActivity {
 
@@ -48,12 +48,12 @@ public class ForecastActivity extends AppCompatActivity {
         // se destruyen y se vuelven a crear, con lo que al llamar al método 'onCreate' de nuevo
         // pudiera ser que me mostrara también el fragment que se ha quedado enganchado, entonces
         // busco el fragment, y solo si es 'null' hago la transacción. Con esto comprobamos si ya
-        // está añadido el 'cityPagerFragment'
-        if (fm.findFragmentById(R.id.fragment_city_pager) == null) {
+        // está añadido el 'CityListFragment'
+        if (fm.findFragmentById(R.id.fragment_city_list) == null) {
             // Como no existe, lo añadimos con una transacción a nuestra jerarquía de vistas
             fm.beginTransaction()
-                    // añado el fragment que yo quiero ('new CityPagerFragment()') y donde lo meto('fragment_city_pager')
-                    .add(R.id.fragment_city_pager, new CityPagerFragment())
+                    // añado el fragment que yo quiero ('new CityListFragment()') y donde lo meto('fragment_city_list')
+                    .add(R.id.fragment_city_list, new CityListFragment())
                     .commit(); // Mucho ojo, no olvidar de poner el commit
         }
 
