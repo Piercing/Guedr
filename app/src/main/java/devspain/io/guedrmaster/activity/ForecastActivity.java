@@ -1,6 +1,7 @@
 package devspain.io.guedrmaster.activity;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -8,6 +9,7 @@ import android.util.Log;
 
 import devspain.io.guedrmaster.R;
 import devspain.io.guedrmaster.fragment.CityListFragment;
+import devspain.io.guedrmaster.fragment.CityPagerFragment;
 import devspain.io.guedrmaster.model.City;
 
 public class ForecastActivity extends AppCompatActivity implements CityListFragment.CityListListener {
@@ -66,6 +68,16 @@ public class ForecastActivity extends AppCompatActivity implements CityListFragm
         // Aquí me entero de que una ciudad ha sido seleccionada en el CityListFragment
         // Tendré que mostara la ciudad en el CityPagerFragment
         Log.v("ForecastActivity", "Se ha seleccionado al ciudad: " + city + " número: " + position);
+
+        // Para arrancar la actividad tenemos que crear un 'intent'
+        // Le paso la clase, 'this' y la actividad que voy a arracancar
+        Intent intent = new Intent(this, CityPagerActivity.class);
+
+        // Le paso el índice de la ciudad que le hace falta
+        intent.putExtra(CityPagerActivity.EXTRA_CITY_INDEX, position);
+
+        // La arranco
+        startActivity(intent);
     }
 }
 

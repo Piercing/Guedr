@@ -25,21 +25,68 @@ import devspain.io.guedrmaster.model.City;
  */
 public class CityPagerFragment extends Fragment {
 
+    // Necesitamos un argumento de entrada, le decimos
+    // como queremos que se llame el argumento que tenga
+    private static final String ARG_CITY_INDEX = "ARG_CITY_INDEX";
+
     // Atributos
     private Cities mCities;
     private ViewPager mPager;
+    // Guardaremos el 'ARG_CITY_INDEX' como un atributo
+    // de este 'fragment', es el 'índice de la ciudad' que
+    // luego utilizaremos más adelante en el 'onCreateView'
+    private int mInitialCityIndex;
 
     public CityPagerFragment() {
         // Required empty public constructor
     }
 
-    // Siempre que tengamos menún hay que implementar esta método, sino, no los vemos en el fragment
+    // Método  que  crea una  nueva  instancia  de  un  'CityPagerFragment'  con  la
+    // position de la ciudad recibida, que es la posición a la que queremos movernos
+    public static CityPagerFragment newInstance(int position) {
+
+        // Con los Bundles comunicamos de Actividad hacia fragment
+        // y con Interfaces al contrario, Fragment hacia Actividad, hay otra forma
+        // que es llamar directamente desde la actividad a métodos del Fragment.
+        Bundle arguments = new Bundle();
+        // Inserta un valor entero en el mapeo de este paquete,
+        // en sustitución de un valor existente de la clave dada.
+        //Es decir, sustituye el String que le paso, 'ARG_CITY_INDEX', por el entero 'position'
+        arguments.putInt(ARG_CITY_INDEX, position);//(*1)
+
+        // Creamos el CityPagerFragment
+        CityPagerFragment fragment = new CityPagerFragment();
+        // Al fragment le pasamos sus argumentos
+        fragment.setArguments(arguments);
+
+        // Devulevo el fragment recién creado y con sus argumentos
+        return fragment;
+    }
+
+    // Siempre que tengamos menú hay que implementar esta método, sino, no los vemos en el fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Le decimos que tiene menú
         setHasOptionsMenu(true);
+        // Sacamos los argumentos de este fragment con 'getArgumets médodo de la clase Fragments de Android
+        /**
+         * /**
+         * Return the arguments supplied to {@link #setArguments}, if any.
+         final public Bundle getArguments() {
+         return mArguments;
+         }
+         */
+        // Con los arguments, que son Bundles, comunicamos Actividad hacia fragment
+        // y con Interfaces al contrario, Fragment hacia Actividad, hay otra forma
+        // que es llamar directamente desde la actividad a métodos del Fragment.
+        if (getArguments() != null) {
+            // Asignamos un valor a 'mInitialCityIndex'
+            // Con esto obtengo el índice inicial.
+            // Aquí 'ARG_CITY_INDEX' tiene el valor entero de position que coge más arriba en putInt (*1)
+            mInitialCityIndex = getArguments().getInt(ARG_CITY_INDEX);
+        }
     }
 
     @Override
@@ -69,6 +116,7 @@ public class CityPagerFragment extends Fragment {
 
         // Me entero de cuándo el usuario cambia de página en el 'ViewPager', lo pongo a la escucha
         mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -89,6 +137,10 @@ public class CityPagerFragment extends Fragment {
 
             }
         });
+
+        // Me muevo a la ciudad inicial a través del fragment_city_pager => mPager = view_pager
+        // Le indico cual es el primer elemento, la primera página que tiene que mostrar.
+        mPager.setCurrentItem(mInitialCityIndex);
 
         // Llamo a updateCityInfo(), para que al arrancar me muestre en la
         // toolbar la que esté en ese momento que me lo da el propio método
@@ -141,7 +193,7 @@ public class CityPagerFragment extends Fragment {
         if (item.getItemId() == R.id.previous) {
             // Retrocedemos una página, con éste método, le paso
             // el currentItem que hubiera en ese momento -1
-            mPager.setCurrentItem(mPager.getCurrentItem() -1);
+            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
             // Depués de retroceder de página, actulizamos
             updateCityInfo();
 
@@ -168,7 +220,7 @@ public class CityPagerFragment extends Fragment {
         // Compruebo primero si voy a poder utilizar el 'pager', ya que lo puedo llamar antes del 'onCreate'
         // ya que éste es el que me va a decir con el 'getCurrenteItem' en que posición, ya que si estoy en
         // la cero, desactivo el botón 'anterior' y si estoy en la última posición desactivo el botón anterior
-        if (mPager != null){
+        if (mPager != null) {
             // Obtengo la referencia a 'siguiente' y 'anterior'
             MenuItem menuPrev = menu.findItem((R.id.previous));
             MenuItem menuNext = menu.findItem(R.id.next);

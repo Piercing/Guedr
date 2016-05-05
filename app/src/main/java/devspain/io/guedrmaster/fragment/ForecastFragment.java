@@ -43,6 +43,7 @@ public class ForecastFragment extends Fragment {
      * Patrón para crear un método llamado newInstance, recibe como argumentos lo
      * que necesita un 'fragment', facilitando las cosas a la hora de instanciar
      * un fragment
+     *
      * @param city
      * @return
      */
@@ -61,7 +62,7 @@ public class ForecastFragment extends Fragment {
         fragment.setArguments(argumets);
 
         // Devuelvo el fragments
-        return  fragment;
+        return fragment;
     }
 
     protected static float toFarenheit(float celsius) {
@@ -75,7 +76,7 @@ public class ForecastFragment extends Fragment {
         // para que lo muestre la actividad
         setHasOptionsMenu(true);
 
-        // NOTA: se puede hacer también en l método de arriba, 'newInstance'
+        // NOTA: se puede hacer también en el método de arriba, 'newInstance'
         // Sacamos los argumentos de este fragment con 'getArgumets médodo de la clase Fragments de Android'
         if (getArguments() != null) {
             mCity = (City) getArguments().getSerializable(ARG_CITY);
@@ -201,11 +202,10 @@ public class ForecastFragment extends Fragment {
                                 showCelsius = oldShowCelsius;
 
                                 // Guardamos el valor anterior en las preferencia
-                                    PreferenceManager.getDefaultSharedPreferences(ForecastFragment.this.getActivity())
-                                            .edit()
-                                            .putBoolean(PREFERENCE_UNITS, showCelsius)
-                                            .commit();
-
+                                PreferenceManager.getDefaultSharedPreferences(ForecastFragment.this.getActivity())
+                                        .edit()
+                                        .putBoolean(PREFERENCE_UNITS, showCelsius)
+                                        .apply();
 
                                 // Actualizamos la interfaz
                                 updateCityInfo();
