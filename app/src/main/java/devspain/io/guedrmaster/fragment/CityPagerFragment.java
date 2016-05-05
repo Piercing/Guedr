@@ -150,7 +150,11 @@ public class CityPagerFragment extends Fragment {
         return root;
     }
 
-    public void updateCityInfo() {
+    /**
+     * Método que actuliza el nombre de la ciudad en la toolbar al cambiar a otra
+     */
+
+    protected void updateCityInfo() {
 
         // Saco la posición en la que estoy en ese momento y la guardo
         int position = mPager.getCurrentItem();
@@ -175,6 +179,18 @@ public class CityPagerFragment extends Fragment {
         }
     }
 
+    /**
+     * Método para movernos a la posición de la ciudad que recibo por parámetro
+     *
+     * @param position
+     */
+    public void showCity(int position) {
+        // Le indico el Pager que se mueva a la posición que yo quiera
+        mPager.setCurrentItem(position);
+        // Actualizo una vez se ha movido a la posición indicada
+        updateCityInfo();
+    }
+
     // Le damos menús a nuestro fragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -193,16 +209,14 @@ public class CityPagerFragment extends Fragment {
         if (item.getItemId() == R.id.previous) {
             // Retrocedemos una página, con éste método, le paso
             // el currentItem que hubiera en ese momento -1
-            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
-            // Depués de retroceder de página, actulizamos
-            updateCityInfo();
+            showCity(mPager.getCurrentItem() - 1);
 
             return true;
 
             //Si el 'itemID' es el de 'next' avanzamos
         } else if (item.getItemId() == R.id.next) {
             // Avanzamos una página, aquí le sumo 1
-            mPager.setCurrentItem(mPager.getCurrentItem() + 1);
+            showCity(mPager.getCurrentItem() + 1);
 
             return true;
         }
