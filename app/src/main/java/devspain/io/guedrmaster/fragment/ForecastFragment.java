@@ -17,6 +17,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import devspain.io.guedrmaster.R;
 import devspain.io.guedrmaster.activity.SettingsActivity;
 import devspain.io.guedrmaster.model.City;
@@ -218,24 +222,71 @@ public class ForecastFragment extends Fragment {
 
     public void updateCityInfo() {
 
-        // Establezco el nombre de la ciudad en la vista
-        //mCityName.setText(mCity.getName());
-
         // Obtengo el forecast
         Forecast forecast = mCity.getForecast();
-        // Muestro en la interfaz mi modelo
-        float maxTemp = forecast.getMaxTemp();
-        float minTemp = forecast.getMinTemp();
+        // Si no tengo forecast, es null, entonces me lo tengo que bajar
+        if (forecast == null) {
+            downloadWeather();
+        } else {
+            // Muestro en la interfaz mi modelo
+            float maxTemp = forecast.getMaxTemp();
+            float minTemp = forecast.getMinTemp();
 
-        if (!showCelsius) {
-            maxTemp = toFarenheit(maxTemp);
-            minTemp = toFarenheit(minTemp);
+            if (!showCelsius) {
+                maxTemp = toFarenheit(maxTemp);
+                minTemp = toFarenheit(minTemp);
+            }
+
+            mMaxTemp.setText(String.format(getString(R.string.max_temp_label), maxTemp));
+            mMinTemp.setText(String.format(getString(R.string.min_temp_label), minTemp));
+            mHumidity.setText(String.format(getString(R.string.humidity_label), forecast.getHumifity()));
+            mDescription.setText(forecast.getDescription());
+            mForecastImage.setImageResource(forecast.getIcon());
         }
+    }
 
-        mMaxTemp.setText(String.format(getString(R.string.max_temp_label), maxTemp));
-        mMinTemp.setText(String.format(getString(R.string.min_temp_label), minTemp));
-        mHumidity.setText(String.format(getString(R.string.humidity_label), forecast.getHumifity()));
-        mDescription.setText(forecast.getDescription());
-        mForecastImage.setImageResource(forecast.getIcon());
+    /**
+     * Método para bajar de la red la información del tiempo
+     */
+    private void downloadWeather() {
+
+        // 1º creo una URL
+        URL url = null;
+        // 2º creo un inputStream, clase que me permite recibir datos unos detrás de otros, un flujo
+        InputStream input = null;
+
+        try {
+            url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&appid=2547fa23ee52c05ff6f7ac92560a5c1d&units=metrics&lang=sp",
+                    mCity.getName()));// %s ==> parametrización de la ciudad
+            // Creo una conexión
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            // Me conecto
+            con.connect();
+            // Longitud de la respuesta (para más info), nos puede servir por si la respuesta es muy larga
+            // poder hacer una barra de progreso en donde nos indique la carga de dichos datos hasta el total.
+            int responseLenght = con.getContentLength();
+            // Descargamos los datos de un Kb en un Kb
+            byte data[] = new byte[1024];
+            // Datos pra saber cuanto me he bajado
+            long currentBytes = 0;
+            int downloadedBytes;
+            input = con.getInputStream();
+            // Me creo una cadena que voy a ir construyendo cada
+            // vez más grande, los voy añadiendo a esta variable
+            StringBuilder sb = new StringBuilder();
+            // El 'read(data) me devuelve -1 cuando hay terminado,
+            // por tanto mientras no sea -1
+            while ((downloadedBytes = input.read(data)) != -1) {
+
+                // Añado al nuevo String que le paso una nueva cadena con los datos,
+                // comenzando en cero hasta todos los datos que se haya descargado
+                sb.append(new String(data, 0, downloadedBytes));
+            }
+
+            // Analizamos los datos para convertirlos de JSOn a algo que podamos manejar en código
+
+        } catch (Exception ex) {
+
+        }
     }
 }
