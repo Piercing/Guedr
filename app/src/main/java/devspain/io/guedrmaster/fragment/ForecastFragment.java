@@ -1,8 +1,11 @@
 package devspain.io.guedrmaster.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -15,8 +18,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -33,6 +42,8 @@ public class ForecastFragment extends Fragment {
     private static final int REQUEST_UNITS = 1;
     private static final String TAG = "ForecastActivity";
     private static final String PREFERENCE_UNITS = "units";
+    private static final int LOADING_VIEW_INDEX = 0;
+    private static final int FORECAST_VIEW_INDEX = 1;
 
     private TextView mMaxTemp;
     private TextView mMinTemp;
@@ -40,6 +51,10 @@ public class ForecastFragment extends Fragment {
     private TextView mDescription;
     //private TextView mCityName;
     private ImageView mForecastImage;
+    // Obtener una referencia al ViewSwitcher
+    private ViewSwitcher mViewSwitcher;
+    // Obtener una referencia a la ProgressBar
+    private ProgressBar mProgressBar;
     private boolean showCelsius;
     private City mCity;
 
@@ -119,7 +134,15 @@ public class ForecastFragment extends Fragment {
         mHumidity = (TextView) root.findViewById(R.id.humidity);
         mDescription = (TextView) root.findViewById(R.id.forecast_description);
         mForecastImage = (ImageView) root.findViewById(R.id.forecast_image);
-        //mCityName = (TextView) root.findViewById(R.id.city);
+        mViewSwitcher = (ViewSwitcher) root.findViewById(R.id.view_switcher);
+        mProgressBar = (ProgressBar) root.findViewById(R.id.progress);
+
+        // Le decimos al ViewSwitcher cómo queremos las animaciones entre vistas
+        // Animación de cuando va a entrar una nueva vista,
+        // cogemos alguna de las que ya tiene Android definidas
+        mViewSwitcher.setInAnimation(getActivity(), android.R.anim.fade_in);
+        // Animación de cuando va a salir una nueva vista
+        mViewSwitcher.setOutAnimation(getActivity(), android.R.anim.fade_out);
 
         // Actualizamos la interfaz
         updateCityInfo();
@@ -228,6 +251,9 @@ public class ForecastFragment extends Fragment {
         if (forecast == null) {
             downloadWeather();
         } else {
+
+            // Le indico al 'mViewSwitcher' cual de las vistas a de mostrar, LA 1 = FORECAST_VIEW_INDEX
+            mViewSwitcher.setDisplayedChild(FORECAST_VIEW_INDEX);
             // Muestro en la interfaz mi modelo
             float maxTemp = forecast.getMaxTemp();
             float minTemp = forecast.getMinTemp();
@@ -250,43 +276,199 @@ public class ForecastFragment extends Fragment {
      */
     private void downloadWeather() {
 
-        // 1º creo una URL
-        URL url = null;
-        // 2º creo un inputStream, clase que me permite recibir datos unos detrás de otros, un flujo
-        InputStream input = null;
+        // Implementamos la clase abstracta para descargar datos en 2º plano, (lo suyo es hacerla aparte),
+        AsyncTask<City, Integer, Forecast> weatherDownloaderAndUpdate = new AsyncTask<City, Integer, Forecast>() {
 
-        try {
-            url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&appid=2547fa23ee52c05ff6f7ac92560a5c1d&units=metrics&lang=sp",
-                    mCity.getName()));// %s ==> parametrización de la ciudad
-            // Creo una conexión
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            // Me conecto
-            con.connect();
-            // Longitud de la respuesta (para más info), nos puede servir por si la respuesta es muy larga
-            // poder hacer una barra de progreso en donde nos indique la carga de dichos datos hasta el total.
-            int responseLenght = con.getContentLength();
-            // Descargamos los datos de un Kb en un Kb
-            byte data[] = new byte[1024];
-            // Datos pra saber cuanto me he bajado
-            long currentBytes = 0;
-            int downloadedBytes;
-            input = con.getInputStream();
-            // Me creo una cadena que voy a ir construyendo cada
-            // vez más grande, los voy añadiendo a esta variable
-            StringBuilder sb = new StringBuilder();
-            // El 'read(data) me devuelve -1 cuando hay terminado,
-            // por tanto mientras no sea -1
-            while ((downloadedBytes = input.read(data)) != -1) {
+            // Guardo la ciudad
+            private City mCity;
 
-                // Añado al nuevo String que le paso una nueva cadena con los datos,
-                // comenzando en cero hasta todos los datos que se haya descargado
-                sb.append(new String(data, 0, downloadedBytes));
+            // NORMALMENTE HAY QUE IMPLEMENTAR ESTOS TRES MÉTODOS
+
+            // Este método se ejecuta en el hilo principal ojo!!, pero
+            // si que tiene acceso a la interfaz (al hilo principal)
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                // Aquí preparamos la interfaz para la tarea larga. Estamos en el hilo principal.
+                mViewSwitcher.setDisplayedChild(LOADING_VIEW_INDEX);
             }
 
-            // Analizamos los datos para convertirlos de JSOn a algo que podamos manejar en código
+            @Override
+            // Puede recibir todas las City que queramos, de ahi City...params (a params la podemos llamar como queramos)
+            protected Forecast doInBackground(City... params) {
+                // Aquí estamos en un hilo que NO es el principal, podemos tardar lo que queramos
+                // La city que nos interesa es la primera
+                City city = params[0];
+                // Guardo la city que obtengo
+                mCity = city;
 
-        } catch (Exception ex) {
+                // 1º creo una URL
+                URL url = null;
+                // 2º creo un inputStream, clase que me permite recibir datos unos detrás de otros, un flujo
+                InputStream input = null;
 
-        }
+                try {
+                    url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s&appid=2547fa23ee52c05ff6f7ac92560a5c1d&units=metrics&lang=sp",
+                            city.getName()));// %s ==> parametrización de la ciudad
+                    // Creo una conexión
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    // Me conecto
+                    con.connect();
+                    // Longitud de la respuesta (para más info), nos puede servir por si la respuesta es muy larga
+                    // poder hacer una barra de progreso en donde nos indique la carga de dichos datos hasta el total.
+                    int responseLenght = con.getContentLength();
+                    // Descargamos los datos de un Kb en un Kb
+                    byte data[] = new byte[1024];
+                    // Datos pra saber cuanto me he bajado
+                    long currentBytes = 0;
+                    int downloadedBytes;
+                    input = con.getInputStream();
+                    // Me creo una cadena que voy a ir construyendo cada
+                    // vez más grande, los voy añadiendo a esta variable
+                    StringBuilder sb = new StringBuilder();
+                    // El 'read(data) me devuelve -1 cuando hay terminado,
+                    // por tanto mientras no sea -1
+                    while ((downloadedBytes = input.read(data)) != -1) {
+
+                        // Añado al nuevo String que le paso una nueva cadena con los datos,
+                        // comenzando en cero hasta todos los datos que se haya descargado
+                        sb.append(new String(data, 0, downloadedBytes));
+                        if (responseLenght > 0) {
+                            // Añadimos los Bytes que llevamos descargados al total descargado
+                            currentBytes += downloadedBytes;
+                            // Aquí actulazaríamos nuestra barra de progreso con curretBytes
+                            // Llamo a un método que si puede trabajar en 2º plano, ya que el
+                            // 'onProgressUpdate' actualiza la interfaz, y como sabemos para
+                            // eso tiene que realizarlo en 1º plano, con este obtemos los datos
+                            // descargados en 2º plano
+                            publishProgress((int) (currentBytes * 100) / responseLenght);
+                        }
+                    }
+
+                    // Analizamos los datos para convertirlos de JSON a algo que podamos manejar en código
+                    // Este objeto ya se encarga de parsear una cadena en algo que podamos manejar
+                    // 'jsonRoot' contendrá todo el objeto JSON que descargarmos de OpenWeather
+                    JSONObject jsonRoot = new JSONObject(sb.toString());
+                    // Para acceder al objeto 'list' que nos viene en el 'jsonRoot' y que es un array
+                    JSONArray days = jsonRoot.getJSONArray("list");
+                    // De el array 'days' sólo necesito el de hoy, que es el primero (0)
+                    JSONObject today = days.getJSONObject(0);// TENER EN CUENTA CONTROLAR LOS ERRORES
+                    // Ahora tengo que acceder al 'min' y al 'max' del objeto
+                    // 'temp' el cual está dentro de este primer objeto de 'list'
+                    float max = (float) today.getJSONObject("temp").getDouble("max");
+                    float min = (float) today.getJSONObject("temp").getDouble("min");
+                    // Este como no es un objeto lo saco directamente, no está dentro de 'temp'
+                    float humidity = (float) today.getDouble("humidity");
+
+                    // Para acceder a la 'description' primero tengo que pasar por el objeto 'weather' de mi objeto
+                    // 'today' (el today es el que he creado yo más arriba y que contiene el primer objeto de
+                    // 'list'), por tanto obtengo primero 'weather' y después 'description', lo mismo para el icono
+                    String description = today.getJSONArray("weather").getJSONObject(0).getString("description");
+                    String iconString = today.getJSONArray("weather").getJSONObject(0).getString("icon");
+
+                    // Quitamos el último caracter del valor de 'icon: 10d' le quitamos la 'd' para evitar problemas
+                    // Cojo desde el primer caracter mas lo que mida la cadena menos 2, l
+                    iconString.substring(0, iconString.length() - 2);
+                    // Ponemos un icono por defecto, el primero
+                    int icon = R.drawable.ico_01;
+
+                    switch (iconString) {
+                        case "01":
+                            icon = R.drawable.ico_01;
+                            break;
+                        case "02":
+                            icon = R.drawable.ico_02;
+                            break;
+                        case "03":
+                            icon = R.drawable.ico_03;
+                            break;
+                        case "04":
+                            icon = R.drawable.ico_04;
+                            break;
+                        case "09":
+                            icon = R.drawable.ico_09;
+                            break;
+                        case "10":
+                            icon = R.drawable.ico_10;
+                            break;
+                        case "11":
+                            icon = R.drawable.ico_11;
+                            break;
+                        case "13":
+                            icon = R.drawable.ico_13;
+                            break;
+                        case "50":
+                            icon = R.drawable.ico_50;
+                            break;
+                    }
+
+                    // Simulamos artificalmente un tiempo de descarga largo, lo dormimos 5sg
+                    Thread.sleep(5000);
+
+                    // Ya tengo toda la información para crearme un objeto forecast y lo devuelvo
+                    return new Forecast(max, min, humidity, description, icon);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                } finally {
+                    if (input != null) {
+                        try {
+                            input.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                // Si hay cualquier error devolvemos null
+                return null;
+            }
+
+            // Método para la barra de descarga
+
+            @Override
+            protected void onProgressUpdate(Integer... values) {
+                super.onProgressUpdate(values);
+                // Saco el primero de los elementos porque sólo me están pasando un número como progreso
+                mProgressBar.setProgress(values[0]);
+            }
+
+            @Override
+            protected void onPostExecute(Forecast forecast) {
+                super.onPostExecute(forecast);
+                if (forecast != null) {
+                    // Aquí preparamos la interfaz con los datos que nos han dado en doInBackground
+                    // Estamos en el hilo principal, después de ejecutar en segundo plano, actualizamos la city(modelo)
+                    mCity.setForecast(forecast);
+                    // Pedimos de nuevo que se actualice la interfaz
+                    updateCityInfo();
+                } else {
+                    // Ha habido algún error se lo indicamos al usuario
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                    alertDialog.setTitle("Error");
+                    alertDialog.setMessage("No se pudo descargar la información del tiempo");
+                    alertDialog.setPositiveButton("Reintentar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Si pulsa en reintentar la descarga o la conexión volvemos a llamar al método:
+                            downloadWeather();
+                        }
+                    });
+                    alertDialog.setNegativeButton("Regresar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Esto normalmente no se hace así, se le avisa a la actividad y ella decide
+                            getActivity().finish();
+                        }
+                    });
+                    // Mostrar el diálogo
+                    alertDialog.show();
+                }
+            }
+        };
+        // Ejecutamos la tarea para que empiece a bajarse en 2º plano los datos y también la actualiza
+        // Le paso la ciudad de la que quiero que me descargue los datos.
+        // Este método no va a bloquear la interfaz, ejecuta en segundo plano y devuelve el control a la siguiente línea
+        weatherDownloaderAndUpdate.execute(mCity);
     }
 }
