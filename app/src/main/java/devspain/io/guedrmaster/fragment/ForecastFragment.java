@@ -6,10 +6,12 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,13 +35,14 @@ import java.net.URL;
 import java.util.LinkedList;
 
 import devspain.io.guedrmaster.R;
+import devspain.io.guedrmaster.activity.DetailActivity;
 import devspain.io.guedrmaster.activity.SettingsActivity;
 import devspain.io.guedrmaster.adapter.ForecastRecyclerViewAdapter;
 import devspain.io.guedrmaster.model.City;
 import devspain.io.guedrmaster.model.Forecast;
 
 
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements ForecastRecyclerViewAdapter.OnForecastClickListener {
     public static final String ARG_CITY = "city";
     public static final String PREFERENCE_UNITS = "units";
 
@@ -144,8 +147,8 @@ public class ForecastFragment extends Fragment {
         mList.setItemAnimator(new DefaultItemAnimator());
         // Por útlimo, nos hace falta el ADAPTADOR, le paso una lista vacía porque aún no tengo datos aquí
         // Cuando los tenga le pasaré otro adaptador diciéndole que tiene datos nuevos y que se acutalice
-        // Le paso el 'getActivity' porque los necesita el contexto.
-        mList.setAdapter(new ForecastRecyclerViewAdapter(new LinkedList<Forecast>(), getActivity()));
+        // Le paso el 'getActivity' porque los necesita el contexto y le digo que el OnClickListener soy yo.
+        mList.setAdapter(new ForecastRecyclerViewAdapter(new LinkedList<Forecast>(), getActivity(), this));
 
 
         // Actualizamos la interfaz
@@ -257,7 +260,7 @@ public class ForecastFragment extends Fragment {
             mViewSwitcher.setDisplayedChild(FORECAST_VIEW_INDEX);
             // Aquí tenemos datos, en vez de una lista vacía le paso
             //  lo que hay en la ciudad y los mostramos en la lista
-            mList.setAdapter(new ForecastRecyclerViewAdapter(mCity.getForecast(), getActivity()));
+            mList.setAdapter(new ForecastRecyclerViewAdapter(mCity.getForecast(), getActivity(), this));
         }
     }
 
@@ -474,5 +477,27 @@ public class ForecastFragment extends Fragment {
         // Le paso la ciudad de la que quiero que me descargue los datos.
         // Este método no va a bloquear la interfaz, ejecuta en segundo plano y devuelve el control a la siguiente línea
         weatherDownloaderAndUpdate.execute(mCity);
+    }
+
+
+    @Override
+    public void onForecastClick(Forecast forecast, View view) {
+        // Aquí me entero que se ha pulsasdo una de las tarjetas (CARDS)
+        // Lanzo la DetailActivity, pero de una forma especial para indicar que hay un elemetno común
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        // Esto nos permite comprvar qué vesión de Android estamos ejecutando
+        // y así evitar que nos casque si no existe el método que pongo abajo
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            // Lanzo la actividad, pero pasándole unas opciones con un transición que hace que las dos
+            // pantallas tengan algo en común y le decimos quién va a estar en común, la vista que me están pasando (v)
+            // y el nombre de la transición para que lo encuentre en la parte destino
+            startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    getActivity(), // Contexto que necestia este método
+                    view,// La vista común en origen
+                    getString(R.string.transition_to_detail // El nombre de la vista en destino
+                    )).toBundle());
+        }else{
+            startActivity(intent);
+        }
     }
 }

@@ -14,4 +14,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="previous">Anterior</string>
     <string name="next">siguiente</string>
+    <string name="transition_to_detail">transitionToDetail</string>
 </resources>

@@ -31,12 +31,14 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
     // Guardo aquí la lista a mostrar
     private LinkedList<Forecast> mForecasts;
     private Context mContext;
+    private OnForecastClickListener mParentClickListener;
 
     // Necesitamos un constructor que nos pase los elementos a mostrar, la lista
-    public ForecastRecyclerViewAdapter(LinkedList<Forecast> forecasts, Context context) {
+    public ForecastRecyclerViewAdapter(LinkedList<Forecast> forecasts, Context context, OnForecastClickListener parentClickListener) {
         super();
         mForecasts = forecasts;
         mContext = context;
+        mParentClickListener = parentClickListener;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
         // la asigno al 'ViewHolder'
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_forecast, parent, false);
         // Le pasamos la vista ya que sabe cómo pintarla
-        return new ForecastViewHolder(view);
+        return new ForecastViewHolder(view, mParentClickListener);
     }
 
     @Override
@@ -76,23 +78,33 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
         private TextView mMinTemp;
         private TextView mHumidity;
         private TextView mDescription;
-        //private TextView mCityName;
         private ImageView mForecastImage;
+        private Forecast mForecast;
 
-        public ForecastViewHolder(View itemView) {
+        public ForecastViewHolder(View itemView, final OnForecastClickListener parentClickListener) {
             super(itemView);
             mMaxTemp = (TextView) itemView.findViewById(R.id.max_temp);
             mMinTemp = (TextView) itemView.findViewById(R.id.min_temp);
             mHumidity = (TextView) itemView.findViewById(R.id.humidity);
             mDescription = (TextView) itemView.findViewById(R.id.forecast_description);
             mForecastImage = (ImageView) itemView.findViewById(R.id.forecast_image);
+            // Aquí cuando me han pasado la tarjeta completa, le diga que su
+            // clickListener, el de 'itemView',el que me pasan por parámetro.
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Le paso el forecast y la vista
+                    parentClickListener.onForecastClick(mForecast, v);
+                }
+            });
         }
 
 
 
         // Método al que le puedo pasar el forecast que tiene que mostrar en la interfaz
         public void bindForecast(Forecast forecast, Context context) {
-
+            // Me guardo el Forecast para dárselo al ForecastClickListener
+            mForecast = forecast;
             // Muestro en la interfaz mi modelo
             float maxTemp = forecast.getMaxTemp();
             float minTemp = forecast.getMinTemp();
@@ -117,5 +129,12 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
         protected float toFarenheit(float celsius) {
             return (celsius * 1.8f) + 32;
         }
+
+    }
+    // Creo una interfaz pública para poder sacar que Tarjeta,(CARD), se ha pulsado
+    public interface OnForecastClickListener {
+        // Al método que implementa le paso Forecast  que
+        // ha sido pulsada y la vista que ha provocado eso
+        void onForecastClick(Forecast forecast, View view);
     }
 }
