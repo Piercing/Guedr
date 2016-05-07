@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +68,17 @@ public class CityListFragment extends Fragment {
                 }
             }
         });
+
+        // Vamos a hacer algo con el FloatingActionButton (El botón flotante)
+        FloatingActionButton addButton = (FloatingActionButton) root.findViewById(R.id.button_add);
+        // Para que responda a las pulsaciones, pues lo ponemos a la escucha
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Snackbar.make(getView(), "FAB pulsado...", Snackbar.LENGTH_LONG).show();
+            }
+        });
+
         // Como siempre devolvemos el root
         return root;
     }
