@@ -3,7 +3,7 @@
     <string name="max_temp_label">Temperatura máxima: %.2f º</string>
     <string name="min_temp_label">Temperatura mínima: %.2f º</string>
     <string name="humidity_label">Humedad: %.2f </string>
-    <string name="forecast_description_example"></string>
+    <string name="forecast_description_example">Soleado con nubes</string>
     <string name="forecast_image">forecast_image</string>
     <string name="settings">Ajustes</string>
     <string name="updated_preferences">Preferencias actualizadas</string>
